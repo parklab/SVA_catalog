@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/SVA_catalog/static/css/main.13a886e9.chunk.css",
-    "main.js": "/SVA_catalog/static/js/main.ab1d96f4.chunk.js",
-    "main.js.map": "/SVA_catalog/static/js/main.ab1d96f4.chunk.js.map",
+    "main.js": "/SVA_catalog/static/js/main.ea1d8d71.chunk.js",
+    "main.js.map": "/SVA_catalog/static/js/main.ea1d8d71.chunk.js.map",
     "runtime-main.js": "/SVA_catalog/static/js/runtime-main.63dd13bb.js",
     "runtime-main.js.map": "/SVA_catalog/static/js/runtime-main.63dd13bb.js.map",
     "static/css/2.e2ee73ea.chunk.css": "/SVA_catalog/static/css/2.e2ee73ea.chunk.css",
@@ -22,6 +22,6 @@
     "static/css/2.e2ee73ea.chunk.css",
     "static/js/2.fd62bbef.chunk.js",
     "static/css/main.13a886e9.chunk.css",
-    "static/js/main.ab1d96f4.chunk.js"
+    "static/js/main.ea1d8d71.chunk.js"
   ]
 }
