@@ -6,7 +6,20 @@ import { RemoteFile } from "generic-filehandle";
 //import fetch from 'node-fetch'
 import { CHROMS } from "./chrom-utils";
 import { format } from "d3-format";
-import { VCF_URL, TBI_URL, vcfRecordToJson, parseLocation } from "./data-utils";
+import {
+  VCF_URL,
+  TBI_URL,
+  vcfRecordToJson,
+  parseLocation,
+  infoFieldMapping,
+  infoFieldMap,
+  availablePopulations,
+  availablePopulationValues,
+} from "./data-utils";
+import InsertionTable from "./InsertionTable";
+import ReactTooltip from "react-tooltip";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const PAGE_SIZE = 50;
 
@@ -33,8 +46,14 @@ class VariantTable extends React.Component {
     this.filterChange = this.filterChange.bind(this);
     this.toggleDetails = this.toggleDetails.bind(this);
     this.toggleInsertionTable = this.toggleInsertionTable.bind(this);
+
     this.loadVariants();
   }
+
+  // componentDidUpdate() {
+  //   ReactTooltip.rebuild();
+  //   console.log("ss")
+  // }
 
   nextPage() {
     this.setState((prevState) => ({
@@ -96,6 +115,11 @@ class VariantTable extends React.Component {
         v["gene_info"].includes(filter["gene"].toLowerCase())
       );
     }
+    if (filter["region"] !== undefined && filter["region"] !== 'all') {
+      variants = variants.filter((v) =>
+        v["genomic_regions"].includes(filter["region"])
+      );
+    }
     if (filter["from"] !== undefined) {
       const locFrom = parseLocation(filter["from"]);
       if (locFrom) {
@@ -116,6 +140,7 @@ class VariantTable extends React.Component {
     this.setState((prevState) => ({
       filter: filter,
       displayedVariants: variants,
+      tablePage: 0,
     }));
   }
 
@@ -159,6 +184,35 @@ class VariantTable extends React.Component {
     });
   }
 
+  populationTableRow(variantInfos, key) {
+    const cols = [];
+    availablePopulations.forEach((pop) => {
+      const property = pop + "_" + key;
+      const info = variantInfos[property];
+
+      if (info !== undefined) {
+        let val = info[0];
+        if (
+          infoFieldMapping(property) &&
+          infoFieldMapping(property)["format"] &&
+          val !== 0
+        ) {
+          val = format(infoFieldMapping(property)["format"])(val);
+        }
+        cols.push(<td>{val}</td>);
+      } else {
+        cols.push(<td>-</td>);
+      }
+    });
+
+    return (
+      <tr>
+        <td>{availablePopulationValues[key]["title"]}</td>
+        {cols}
+      </tr>
+    );
+  }
+
   render() {
     if (this.state.loading) {
       return (
@@ -171,144 +225,7 @@ class VariantTable extends React.Component {
 
     if (this.state.showInsertionTable) {
       return (
-        <div>
-          <h3 className="py-4 text-center">
-            Some reported pathogenic SVA insertions
-          </h3>
-          <div className="row justify-content-md-center">
-            <div className="col col-lg-8">
-              <button
-                className="btn btn-primary mb-3"
-                onClick={this.toggleInsertionTable}
-              >
-                Back to Browser
-              </button>
-              <div className="">
-                <table className="table table-striped table-hover">
-                  <thead>
-                    <tr>
-                      <th>Related papers</th>
-                      <th>Defected gene</th>
-                      <th>Related disease</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        Rohrer, Jurg, et al., 1999
-                        <br />
-                        Conley, Mary Ellen, et al. 2005
-                      </td>
-                      <td>BTK</td>
-                      <td>XLA</td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Makino, Satoshi, et al. 2007
-                        <br />
-                        Bragg, D. Cristopher, et al 2017
-                        <br />
-                        Aneichyk, Tatsiana, et al. 2018
-                      </td>
-                      <td>TAF1</td>
-                      <td>X-linked dystonia-parkinsonism</td>
-                    </tr>
-                    <tr>
-                      <td>Nakamura, Yuki, et al. 2015</td>
-                      <td>FIX</td>
-                      <td>Hemophilia B</td>
-                    </tr>
-                    <tr>
-                      <td>Wilund, Kenneth R., et al. 2002</td>
-                      <td>LDRAP1</td>
-                      <td>ARH</td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Hassoun, Hani, et al. 1994
-                        <br />
-                        Ostertag, Eric M., et al. 2003
-                      </td>
-                      <td>SPTA1</td>
-                      <td>HE and HPP</td>
-                    </tr>
-                    <tr>
-                      <td>Stacey, Simon N., et al. 2016</td>
-                      <td>CASP8</td>
-                      <td>Breast Cancer Susceptibility</td>
-                    </tr>
-                    <tr>
-                      <td>Nazaryan‐Petersen, Lusine, et al. 2016</td>
-                      <td>A4GNT</td>
-                      <td>Chromothripsis</td>
-                    </tr>
-                    <tr>
-                      <td>Takasu, M., et al. 2007</td>
-                      <td>HLA-A</td>
-                      <td>Leukemia</td>
-                    </tr>
-                    <tr>
-                      <td>van der Klift, Heleen M., et al. 2012</td>
-                      <td>PMS2</td>
-                      <td>Lynch syndrome</td>
-                    </tr>
-                    <tr>
-                      <td>Kobayashi, Kazuhiro, et al. 1998</td>
-                      <td>FKTN</td>
-                      <td>FCMD</td>
-                    </tr>
-                    <tr>
-                      <td>Akman, Hasan O., et al. 2010</td>
-                      <td>PNPLA2</td>
-                      <td>NLSDM</td>
-                    </tr>
-                    <tr>
-                      <td>Vogt, Julia, et al. 2014 (two patients)</td>
-                      <td>SUZ1P</td>
-                      <td>NF1</td>
-                    </tr>
-                    <tr>
-                      <td>Kherraf, Zine-Eddine, et al. 2018</td>
-                      <td>WDR66</td>
-                      <td>Male infertility</td>
-                    </tr>
-                    <tr>
-                      <td>Staaf, Johan, et al. 2019</td>
-                      <td>BRCA1</td>
-                      <td>Breast cancer</td>
-                    </tr>
-                    <tr>
-                      <td>Kim, Jinkuk, et al. 2019</td>
-                      <td>MFSD8</td>
-                      <td>Batten's disease</td>
-                    </tr>
-                    <tr>
-                      <td>Jones, Kaylie D., et al. 2020</td>
-                      <td>CHM</td>
-                      <td>Choroideremia</td>
-                    </tr>
-                    <tr>
-                      <td>de la Morena-Barrio, Belén, et al. 2020</td>
-                      <td>SERPINC1</td>
-                      <td>Antithrombin deficiency</td>
-                    </tr>
-                    <tr>
-                      <td>Taniguchi-Ikeda, Mariko, et al. 2011</td>
-                      <td>Fukutin</td>
-                      <td>Fukuyama muscular dystrophy</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <button
-                  className="btn btn-primary my-3"
-                  onClick={this.toggleInsertionTable}
-                >
-                  Back to Browser
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <InsertionTable toggleInsertionTable={this.toggleInsertionTable} />
       );
     }
 
@@ -352,24 +269,66 @@ class VariantTable extends React.Component {
         </tr>
       );
       if (variant.showDetails) {
-        const infos = [];
+        const generalInfos = [];
         const properties = [];
         for (const property in variant.info) {
           properties.push(property);
         }
         //properties.sort();
         properties.forEach((property) => {
-          infos.push(
-            <div className="col-md-4">
-              <strong>{property}:</strong> {variant.info[property]}
+          if (
+            infoFieldMapping(property) &&
+            infoFieldMapping(property)["cat"] !== "general"
+          ) {
+            return;
+          }
+          const title = infoFieldMapping(property)
+            ? infoFieldMapping(property)["title"]
+            : property;
+          const desc = infoFieldMapping(property)
+            ? infoFieldMapping(property)["desc"]
+            : property;
+          let val = variant.info[property][0];
+          if (
+            infoFieldMapping(property) &&
+            infoFieldMapping(property)["format"] &&
+            val !== 0
+          ) {
+            val = format(infoFieldMapping(property)["format"])(val);
+          }
+          generalInfos.push(
+            <div className="col-md-6">
+              <strong>{title}:</strong> {val}
             </div>
           );
         });
 
+        let populationFreqTable = (
+          <table className="table table-sm">
+            <thead>
+              <tr>
+                <th></th>
+                {availablePopulations.map((pop) => (
+                  <th>{pop}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {Object.keys(availablePopulationValues).map((key) => {
+                return this.populationTableRow(variant.info, key);
+              })}
+            </tbody>
+          </table>
+        );
+
         variantRows.push(
-          <tr className="table-light">
-            <td colSpan={7}>
-              <div className="row">{infos}</div>
+          <tr className="details-row">
+            <td colSpan={7} className="p-3">
+              <div className="row">{generalInfos}</div>
+              {/* <ReactTooltip place="top" type="dark" effect="solid" /> */}
+              <div className="mt-4 mb-2 fs-5">Population frequencies</div>
+
+              {populationFreqTable}
             </td>
           </tr>
         );
@@ -409,9 +368,27 @@ class VariantTable extends React.Component {
       )} of ${variantsToDisplay.length}`;
     }
 
+    // let legend = "";
+    // if(this.state.showLegend){
+    //   const legendItems = [];
+    //   Object.keys(infoFieldMap).forEach(key => {
+    //     legendItems.push(<div>
+    //       <div>{key}</div>
+    //       <div>{infoFieldMap[key]["desc"]}</div>
+    //     </div>);
+    //   })
+
+    //   legend = (
+    //     <div className="p-2">
+    //       {legendItems}
+    //     </div>
+    //   );
+    // }
+
     return (
       <div>
         <h3 className="py-4">Browse variants</h3>
+
         <div className="d-flex mb-2">
           <div className="me-auto"></div>
           <button
@@ -425,11 +402,6 @@ class VariantTable extends React.Component {
           {navButtons}
         </div>
 
-        {/* <div className={this.state.showFilter ? "" : "collapse"}>
-          <div className="my-3 p-3 bg-light">
-ss
-          </div>
-        </div> */}
         <div className="row pb-5">
           <div className="col-md-3 col-xl-2">
             <div className="small pt-1 text-muted">FILTER</div>
@@ -476,6 +448,26 @@ ss
                   onChange={this.filterChange}
                 />
               </div>
+              <div className="mb-2">
+                <label
+                  htmlFor="filter-region"
+                  className="form-label small fw-bold"
+                >
+                  Genomic region
+                </label>
+                <select
+                  className="form-select form-select-sm"
+                  id="filter-region"
+                  onChange={this.filterChange}
+                  data-filtertype="region"
+                  defaultValue={'all'}
+                >
+                  <option value="all">All</option>
+                  <option value="exon">exon</option>
+                  <option value="intron">intron</option>
+                  <option value="intergenic">intergenic</option>
+                </select>
+              </div>
             </div>
 
             <div className="my-2">
@@ -483,9 +475,15 @@ ss
                 Reported pathogenic SVA insertions
               </a>
             </div>
+            {/* <div className="mt-3 mb-2">
+              <a href="#" className="" onClick={this.toggleLegend}>
+                Show legend
+              </a>
+            </div>
+            {legend} */}
           </div>
           <div className="col-md-9 col-xl-10">
-            <div class="table-responsive">
+            <div className="table-responsive-lg">
               <table className="table table-hover table-sm">
                 <thead className="sticky-table-header bg-white">
                   <tr>
