@@ -2,10 +2,8 @@ import md5 from "md5";
 import { CHROMS, chr2Abs } from "./chrom-utils";
 import { format } from "d3-format";
 
-export const VCF_URL =
-  "https://aveit.s3.amazonaws.com/misc/sva_elements.sorted.vcf.gz";
-export const TBI_URL =
-  "https://aveit.s3.amazonaws.com/misc/sva_elements.sorted.vcf.gz.tbi";
+export const VCF_URL = "https://raw.githubusercontent.com/parklab/SVA_catalog/main/data/SVA_variants.gz";
+export const TBI_URL = "https://raw.githubusercontent.com/parklab/SVA_catalog/main/data/SVA_variants.gz.tbi";
 
 export const vcfRecordToJson = (vcfRecord, chrom) => {
   const info = vcfRecord["INFO"];

@@ -218,7 +218,7 @@ class VariantTable extends React.Component {
       return (
         <div className="text-center">
           <CircularProgress color="#999999" width="50px" height="50px" />
-          <div className="mt-2 small text-muted">Loading variants...</div>
+          <div className="mt-2 mb-5 small text-muted">Loading variants...</div>
         </div>
       );
     }
