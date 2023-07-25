@@ -45,7 +45,7 @@ export const vcfRecordToJson = (vcfRecord, chrom) => {
     chromOrder: chrom["order"],
     start: vcfRecord.POS,
     end: info.END[0],
-    length: info.SVLEN[0],
+    length: info.SVLEN[0] < 50 ? "NA" : info.SVLEN[0],
     type: info.SVTYPE[0],
     info: info,
     gene_info: gene_info,
