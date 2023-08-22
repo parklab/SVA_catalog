@@ -208,6 +208,24 @@ class InsertionTable extends React.Component {
                     <td>Fukutin</td>
                     <td>Fukuyama muscular dystrophy</td>
                   </tr>
+                  <tr>
+                    <td>
+                      <a target="_blank" rel="noreferrer" href="https://www.nature.com/articles/s41586-020-2434-2">
+                        Turro, Ernest, et al. 2020
+                      </a>
+                    </td>
+                    <td>ITGB3</td>
+                    <td>Glanzmann thrombasthenia</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <a target="_blank" rel="noreferrer" href="https://www.jthjournal.org/article/S1538-7836(23)00640-2/pdf">
+                        Zhang, Jiasheng, et al. 2023
+                      </a>
+                    </td>
+                    <td>ITGB3</td>
+                    <td>Glanzmann thrombasthenia</td>
+                  </tr>
                 </tbody>
               </table>
               <button
