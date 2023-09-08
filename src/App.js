@@ -35,7 +35,7 @@ function App() {
         
       </div>
       <div className="container-fluid bg-light mt-2 py-4 text-center">
-          <div className="mb-1">If you have any questions or suggestions please contact us:</div>
+          <div className="mb-1">SVA insertions were detected using xTea on WGS short-read data from the 1000 Genomes Project, HGDP, and SGDP datasets. If you have any questions or suggestions please contact us:</div>
           <div>
             <strong>Simon Chong Chu:</strong> chong.simon.chu at gmail.com <br />
             <strong>Peter J Park:</strong> peter_park at hms.harvard.edu
